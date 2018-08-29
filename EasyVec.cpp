@@ -27,12 +27,29 @@ EasyVec::EasyVec(const EasyVec& rhs):EasyMat(rhs)
 }
 EasyVec::EasyVec(EasyVec&& rhs)
 {
-	mData = rhs.mData;
-	rhs.mData = nullptr;
-	mRows = rhs.mRows;
-	mCols = rhs.mCols;
-	mCapacity = rhs.mCapacity;
-	mDim = rhs.mDim;
+	*this = std::move(rhs);
+}
+
+EasyVec::EasyVec(const EasyMat& rhs):EasyMat(rhs)
+{
+
+}
+
+EasyVec::EasyVec(EasyMat&& rhs)
+{
+	*this = std::move(EasyVec(rhs));
+}
+
+const EasyVec& EasyVec::operator=(const EasyVec& rhs)
+{
+	EasyMat::operator=(rhs);
+	return *this;
+}
+
+const EasyVec& EasyVec::operator=(EasyVec&& rhs)
+{
+	EasyMat::operator=(std::move(rhs));
+	return *this;
 }
 
 EasyVec::~EasyVec()

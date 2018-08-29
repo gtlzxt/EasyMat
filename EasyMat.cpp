@@ -6,9 +6,9 @@ using namespace em;
 
 const double EasyMat::mPrecision = 0.000001;
 
-EasyMat::EasyMat(): mCols(0),mRows(0), mCapacity(INIT_CAPACITY), mDim(EM_BY_ROW)
+EasyMat::EasyMat(): mCols(0),mRows(0), mCapacity(0), mDim(EM_BY_ROW),mData(nullptr)
 {
-	initMem();
+
 }
 
 EasyMat::EasyMat(unsigned long cols): mCols(cols),
@@ -51,6 +51,19 @@ const EasyMat & EasyMat::operator=(const EasyMat & rhs)
 		delete[] mData;
 	mData = new double[mCapacity];
 	memcpy(mData, rhs.mData, rhs.mCapacity * sizeof(double));
+	return *this;
+}
+
+const EasyMat& EasyMat::operator=(EasyMat&& rhs)
+{
+	if (this == &rhs)
+		return *this;
+	mCols = rhs.mCols;
+	mRows = rhs.mRows;
+	mCapacity = rhs.mCapacity;
+	mDim = rhs.mDim;
+	mData = rhs.mData;
+	rhs.mData = nullptr;
 	return *this;
 }
 
@@ -210,7 +223,7 @@ EasyMat& EasyMat::operator/=(double rhs)
 
 bool EasyMat::operator==(const EasyMat& rhs) const
 {
-	if (mRows != rhs.rows() || mCols != rhs.cols())
+	if (mRows != rhs.rows() || mCols != rhs.cols() || mDim != rhs.mDim)
 		return false;
 	for (unsigned long i = 0; i < mRows; i++)
 	{
@@ -370,7 +383,7 @@ void EasyMat::set(unsigned long index, const EasyVec& vec, EM_DIMENSION dim)
 	}
 }
 
-void EasyMat::addValue(const EasyVec & vec, EM_DIMENSION dim)
+void EasyMat::add(const EasyVec & vec, EM_DIMENSION dim)
 {
 	//add a value to a row
 	if (dim == EM_BY_ROW)
@@ -400,6 +413,111 @@ void EasyMat::addValue(const EasyVec & vec, EM_DIMENSION dim)
 			for (unsigned long j = 0; j < mRows; j++)
 			{
 				operator()(j, i) += vec[j];
+			}
+		}
+	}
+}
+
+void EasyMat::sub(const EasyVec& vec, EM_DIMENSION dim)
+{
+	//add a value to a row
+	if (dim == EM_BY_ROW)
+	{
+		if (vec.getDimension() == EM_BY_COL)
+			throw "vec and mat not fit, you may need to transpose the vec";
+		if (mCols != vec.size())
+			throw "vec size and mat Cols not fit";
+
+		for (unsigned long i = 0; i < mRows; i++)
+		{
+			for (unsigned long j = 0; j < mCols; j++)
+			{
+				operator()(i, j) -= vec[j];
+			}
+		}
+	}
+	else
+	{
+		if (vec.getDimension() == EM_BY_ROW)
+			throw "vec and mat not fit, you may need to transpose the vec";
+		if (mRows != vec.size())
+			throw "vec size and mat Rows not fit";
+
+		for (unsigned long i = 0; i < mCols; i++)
+		{
+			for (unsigned long j = 0; j < mRows; j++)
+			{
+				operator()(j, i) -= vec[j];
+			}
+		}
+	}
+}
+
+void EasyMat::mul(const EasyVec& vec, EM_DIMENSION dim)
+{
+	//add a value to a row
+	if (dim == EM_BY_ROW)
+	{
+		if (vec.getDimension() == EM_BY_COL)
+			throw "vec and mat not fit, you may need to transpose the vec";
+		if (mCols != vec.size())
+			throw "vec size and mat Cols not fit";
+
+		for (unsigned long i = 0; i < mRows; i++)
+		{
+			for (unsigned long j = 0; j < mCols; j++)
+			{
+				operator()(i, j) *= vec[j];
+			}
+		}
+	}
+	else
+	{
+		if (vec.getDimension() == EM_BY_ROW)
+			throw "vec and mat not fit, you may need to transpose the vec";
+		if (mRows != vec.size())
+			throw "vec size and mat Rows not fit";
+
+		for (unsigned long i = 0; i < mCols; i++)
+		{
+			for (unsigned long j = 0; j < mRows; j++)
+			{
+				operator()(j, i) *= vec[j];
+			}
+		}
+	}
+}
+
+void EasyMat::div(const EasyVec& vec, EM_DIMENSION dim)
+{
+	//add a value to a row
+	if (dim == EM_BY_ROW)
+	{
+		if (vec.getDimension() == EM_BY_COL)
+			throw "vec and mat not fit, you may need to transpose the vec";
+		if (mCols != vec.size())
+			throw "vec size and mat Cols not fit";
+
+		for (unsigned long i = 0; i < mRows; i++)
+		{
+			for (unsigned long j = 0; j < mCols; j++)
+			{
+				operator()(i, j) /= vec[j];
+			}
+		}
+	}
+	else
+	{
+		if (vec.getDimension() == EM_BY_ROW)
+			throw "vec and mat not fit, you may need to transpose the vec";
+		if (mRows != vec.size())
+			throw "vec size and mat Rows not fit";
+
+		for (unsigned long i = 0; i < mCols; i++)
+		{
+			for (unsigned long j = 0; j < mRows; j++)
+			{
+				operator()(j, i) /= vec[j];
 			}
 		}
 	}
@@ -823,8 +941,12 @@ EasyMat::~EasyMat()
 
 void EasyMat::resize(unsigned long newSize)
 {
+	if (newSize <= mCapacity)
+		return;
+	if (newSize < INIT_CAPACITY)
+		newSize = INIT_CAPACITY;
 	double* buf = new double[newSize];
-	if (mRows != 0 && mCols != 0)
+	if (mRows != 0 && mCols != 0 && mData != nullptr)
 	{
 		memcpy(buf, mData, mRows*mCols * sizeof(double));
 	}

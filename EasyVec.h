@@ -9,7 +9,12 @@ namespace em
 		explicit EasyVec(unsigned long size, EM_DIMENSION dim = EM_BY_ROW);
 		EasyVec(const EasyVec& rhs);
 		EasyVec(EasyVec&& rhs);
+		EasyVec(const EasyMat& rhs);
+		EasyVec(EasyMat&& rhs);
+		const EasyVec& operator=(const EasyVec& rhs);
+		const EasyVec& operator=(EasyVec&& rhs);
 		~EasyVec();
+
 		void push_back(double value);
 		void pop_back();
 		void insert(unsigned long index, double value);

@@ -22,6 +22,7 @@ namespace em
 		EasyMat(EasyMat&& rhs);
 		virtual ~EasyMat();
 		const EasyMat& operator=(const EasyMat& rhs);
+		const EasyMat& operator=(EasyMat&& rhs);
 		EasyMat operator+(const EasyMat& rhs) const;
 		EasyMat operator+(double rhs) const;
 		EasyMat operator-(const EasyMat& rhs) const;
@@ -45,7 +46,10 @@ namespace em
 		void insert(unsigned long index,const EasyVec& vec, EM_DIMENSION dim = EM_BY_ROW);
 		void remove(unsigned long index, EM_DIMENSION dim = EM_BY_ROW);
 		void set(unsigned long index, const EasyVec& vec, EM_DIMENSION dim = EM_BY_ROW);
-		void addValue(const EasyVec& vec, EM_DIMENSION dim = EM_BY_ROW);
+		void add(const EasyVec& vec, EM_DIMENSION dim = EM_BY_ROW);
+		void sub(const EasyVec& vec, EM_DIMENSION dim = EM_BY_ROW);
+		void mul(const EasyVec& vec, EM_DIMENSION dim = EM_BY_ROW);
+		void div(const EasyVec& vec, EM_DIMENSION dim = EM_BY_ROW);
 		void swap(unsigned long index1, unsigned long index2, EM_DIMENSION dim = EM_BY_ROW);
 		void sortByRowAsc(unsigned long index);
 		void sortByRowDesc(unsigned long index);
