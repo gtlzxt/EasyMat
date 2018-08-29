@@ -735,6 +735,38 @@ EasyVec EasyMat::sum(EM_DIMENSION dim) const
 	}
 }
 
+void EasyMat::reserve(unsigned long newCapacity)
+{
+	if (newCapacity < mRows * mCols)
+		throw "new capacity is too small";
+	if (newCapacity == 0)
+	{
+		if (mData != nullptr)
+		{
+			delete[] mData;
+			mData = nullptr;
+			return;
+		}
+	}
+	double* buf = new double[newCapacity];
+	if (mCols != 0 && mRows != 0)
+	{
+		memcpy(buf, mData, mRows * mCols * sizeof(double));
+	}
+	if (mData != nullptr)
+	{
+		delete[] mData;
+	}
+	mData = buf;
+	mCapacity = newCapacity;
+}
+
+void EasyMat::shrink()
+{
+	unsigned long dataSize = mRows * mCols;
+	reserve(dataSize);
+}
+
 void EasyMat::show() const
 {
 	for (unsigned long i = 0; i < mRows; i++)
@@ -792,8 +824,14 @@ EasyMat::~EasyMat()
 void EasyMat::resize(unsigned long newSize)
 {
 	double* buf = new double[newSize];
-	memcpy(buf, mData, mRows*mCols * sizeof(double));
-	delete[] mData;
+	if (mRows != 0 && mCols != 0)
+	{
+		memcpy(buf, mData, mRows*mCols * sizeof(double));
+	}
+	if (mData != nullptr)
+	{
+		delete[] mData;
+	}
 	mData = buf;
 	mCapacity = newSize;
 }

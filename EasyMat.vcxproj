@@ -19,12 +19,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="EasyMat.h" />
-    <ClInclude Include="EasyVec.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="EasyMat.cpp" />
     <ClCompile Include="EasyVec.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="EasyMat.h" />
+    <ClInclude Include="EasyVec.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

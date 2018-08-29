@@ -65,6 +65,8 @@ namespace em
 		EasyVec min(EM_DIMENSION dim = EM_BY_COL) const;
 		EasyVec avg(EM_DIMENSION dim = EM_BY_COL) const;
 		EasyVec sum(EM_DIMENSION dim = EM_BY_COL) const;
+		void reserve(unsigned long newCapacity);
+		void shrink();
 		void show() const;
 		static EasyMat ones(unsigned long rows, unsigned long cols);
 		static EasyMat zeros(unsigned long rows, unsigned long cols);
