@@ -229,7 +229,7 @@ bool EasyMat::operator==(const EasyMat& rhs) const
 	{
 		for (unsigned long j = 0; j < mCols; j++)
 		{
-			if (abs(mData[i * mCols + j] - rhs(i, j)) > mPrecision)
+			if (std::abs(mData[i * mCols + j] - rhs(i, j)) > mPrecision)
 				return false;
 		}
 	}	
@@ -379,6 +379,31 @@ void EasyMat::set(unsigned long index, const EasyVec& vec, EM_DIMENSION dim)
 		for (unsigned long i = 0; i < mRows; i++)
 		{
 			operator()(i, index) = vec[i];
+		}
+	}
+}
+
+void EasyMat::set(unsigned long index, double value, EM_DIMENSION dim)
+{
+	//set a row
+	if (dim == EM_BY_ROW)
+	{
+		if (index > mRows)
+			throw "index outof range";
+
+		for (unsigned long i = 0; i < mCols; i++)
+		{
+			operator()(index, i) = value;
+		}
+	}
+	else
+	{
+		if (index > mCols)
+			throw "index outof range";
+
+		for (unsigned long i = 0; i < mRows; i++)
+		{
+			operator()(i, index) = value;
 		}
 	}
 }
@@ -850,6 +875,39 @@ EasyVec EasyMat::sum(EM_DIMENSION dim) const
 			}
 		}
 		return result;
+	}
+}
+
+void EasyMat::abs()
+{
+	for (unsigned long i = 0; i < mRows; i++)
+	{
+		for (unsigned long j = 0; j < mCols; j++)
+		{
+			operator()(i, j) = std::abs(operator()(i, j));
+		}
+	}
+}
+
+void EasyMat::sqrt()
+{
+	for (unsigned long i = 0; i < mRows; i++)
+	{
+		for (unsigned long j = 0; j < mCols; j++)
+		{
+			operator()(i, j) = std::sqrt(operator()(i, j));
+		}
+	}
+}
+
+void EasyMat::pow(double p)
+{
+	for (unsigned long i = 0; i < mRows; i++)
+	{
+		for (unsigned long j = 0; j < mCols; j++)
+		{
+			operator()(i, j) = std::pow(operator()(i, j), p);
+		}
 	}
 }
 

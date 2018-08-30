@@ -46,6 +46,7 @@ namespace em
 		void insert(unsigned long index,const EasyVec& vec, EM_DIMENSION dim = EM_BY_ROW);
 		void remove(unsigned long index, EM_DIMENSION dim = EM_BY_ROW);
 		void set(unsigned long index, const EasyVec& vec, EM_DIMENSION dim = EM_BY_ROW);
+		void set(unsigned long index, double value, EM_DIMENSION dim = EM_BY_ROW);
 		void add(const EasyVec& vec, EM_DIMENSION dim = EM_BY_ROW);
 		void sub(const EasyVec& vec, EM_DIMENSION dim = EM_BY_ROW);
 		void mul(const EasyVec& vec, EM_DIMENSION dim = EM_BY_ROW);
@@ -69,6 +70,9 @@ namespace em
 		EasyVec min(EM_DIMENSION dim = EM_BY_COL) const;
 		EasyVec avg(EM_DIMENSION dim = EM_BY_COL) const;
 		EasyVec sum(EM_DIMENSION dim = EM_BY_COL) const;
+		void abs();
+		void sqrt();
+		void pow(double p);
 		void reserve(unsigned long newCapacity);
 		void shrink();
 		void show() const;
