@@ -558,6 +558,7 @@ void EasyMat::swap(unsigned long index1, unsigned long index2, EM_DIMENSION dim)
 		memcpy(buf, mData + index1 * mCols, dataSize);
 		memcpy(mData + index1 * mCols, mData + index2 * mCols, dataSize);
 		memcpy(mData + index2 * mCols, buf, dataSize);
+		delete[] buf;
 	}
 	else
 	{
