@@ -130,7 +130,7 @@ EasyMat& EasyMat::operator+=(const EasyMat & rhs)
 	{
 		for (unsigned long j = 0; j < mCols; j++)
 		{
-			operator()(i, j) = operator()(i, j) + rhs(i, j);
+			mData[i * mCols + j] = mData[i * mCols + j] + rhs.mData[i * mCols + j];
 		}
 	}
 	return *this;
@@ -142,7 +142,7 @@ EasyMat& EasyMat::operator+=(double rhs)
 	{
 		for (unsigned long j = 0; j < mCols; j++)
 		{
-			operator()(i, j) = operator()(i, j) + rhs;
+			mData[i * mCols + j] = mData[i * mCols + j] + rhs;
 		}
 	}
 	return *this;
@@ -156,7 +156,7 @@ EasyMat& EasyMat::operator-=(const EasyMat & rhs)
 	{
 		for (unsigned long j = 0; j < mCols; j++)
 		{
-			operator()(i, j) = operator()(i, j) - rhs(i, j);
+			mData[i * mCols + j] = mData[i * mCols + j] - rhs.mData[i * mCols + j];
 		}
 	}
 	return *this;
@@ -168,7 +168,7 @@ EasyMat& EasyMat::operator-=(double rhs)
 	{
 		for (unsigned long j = 0; j < mCols; j++)
 		{
-			operator()(i, j) = operator()(i, j) - rhs;
+			mData[i * mCols + j] = mData[i * mCols + j] - rhs;
 		}
 	}
 	return *this;
@@ -187,9 +187,9 @@ EasyMat& EasyMat::operator*=(const EasyMat & rhs)
 			sum = 0;
 			for (unsigned long k = 0; k < mCols; k++)
 			{
-				sum += operator()(i, k) * rhs(k, j);
+				sum += mData[i * mCols + k] * rhs.mData[k * rhs.mCols + j];
 			}
-			tmp(i, j) = sum;
+			tmp.mData[i * tmp.mCols + j] = sum;
 		}
 	}
 
@@ -203,7 +203,7 @@ EasyMat& EasyMat::operator*=(double rhs)
 	{
 		for (unsigned long j = 0; j < mCols; j++)
 		{
-			operator()(i, j) = operator()(i, j) * rhs;
+			mData[i * mCols + j] = mData[i * mCols + j] * rhs;
 		}
 	}
 	return *this;
@@ -215,7 +215,7 @@ EasyMat& EasyMat::operator/=(double rhs)
 	{
 		for (unsigned long j = 0; j < mCols; j++)
 		{
-			operator()(i, j) = operator()(i, j) / rhs;
+			mData[i * mCols + j] = mData[i * mCols + j] / rhs;
 		}
 	}
 	return *this;
@@ -248,7 +248,7 @@ EasyMat EasyMat::transpose()
 	{
 		for (unsigned long j = 0; j < mRows; j++)
 		{
-			result(i, j) = operator()(j, i);
+			result.mData[i * result.mCols + j] = mData[j * mCols + i];
 		}
 	}
 	return result;
@@ -321,7 +321,7 @@ void EasyMat::insert(unsigned long index, const EasyVec & vec, EM_DIMENSION dim)
 		moveCol(index, 1);
 		for (unsigned long i = 0; i < mRows; i++)
 		{
-			mData[i * newCols + index] = vec[i];
+			mData[i * newCols + index] = vec.mData[i];
 		}
 		mCols = newCols;
 	}
@@ -378,7 +378,7 @@ void EasyMat::set(unsigned long index, const EasyVec& vec, EM_DIMENSION dim)
 
 		for (unsigned long i = 0; i < mRows; i++)
 		{
-			operator()(i, index) = vec[i];
+			mData[i * mCols + index] = vec.mData[i];
 		}
 	}
 }
@@ -393,7 +393,7 @@ void EasyMat::set(unsigned long index, double value, EM_DIMENSION dim)
 
 		for (unsigned long i = 0; i < mCols; i++)
 		{
-			operator()(index, i) = value;
+			mData[index * mCols + i] = value;
 		}
 	}
 	else
@@ -403,7 +403,7 @@ void EasyMat::set(unsigned long index, double value, EM_DIMENSION dim)
 
 		for (unsigned long i = 0; i < mRows; i++)
 		{
-			operator()(i, index) = value;
+			mData[i * mCols + index] = value;
 		}
 	}
 }
@@ -422,7 +422,7 @@ void EasyMat::add(const EasyVec & vec, EM_DIMENSION dim)
 		{
 			for (unsigned long j = 0; j < mCols; j++)
 			{
-				operator()(i, j) += vec[j];
+				mData[i * mCols + j] += vec.mData[j];
 			}
 		}
 	}
@@ -437,7 +437,7 @@ void EasyMat::add(const EasyVec & vec, EM_DIMENSION dim)
 		{
 			for (unsigned long j = 0; j < mRows; j++)
 			{
-				operator()(j, i) += vec[j];
+				mData[j * mCols + i] += vec.mData[j];
 			}
 		}
 	}
@@ -457,7 +457,7 @@ void EasyMat::sub(const EasyVec& vec, EM_DIMENSION dim)
 		{
 			for (unsigned long j = 0; j < mCols; j++)
 			{
-				operator()(i, j) -= vec[j];
+				mData[i * mCols + j] -= vec.mData[j];
 			}
 		}
 	}
@@ -472,7 +472,7 @@ void EasyMat::sub(const EasyVec& vec, EM_DIMENSION dim)
 		{
 			for (unsigned long j = 0; j < mRows; j++)
 			{
-				operator()(j, i) -= vec[j];
+				mData[j * mCols + i] -= vec.mData[j];
 			}
 		}
 	}
@@ -492,7 +492,7 @@ void EasyMat::mul(const EasyVec& vec, EM_DIMENSION dim)
 		{
 			for (unsigned long j = 0; j < mCols; j++)
 			{
-				operator()(i, j) *= vec[j];
+				mData[i * mCols + j] *= vec.mData[j];
 			}
 		}
 	}
@@ -507,7 +507,7 @@ void EasyMat::mul(const EasyVec& vec, EM_DIMENSION dim)
 		{
 			for (unsigned long j = 0; j < mRows; j++)
 			{
-				operator()(j, i) *= vec[j];
+				mData[j * mCols + i] *= vec.mData[j];
 			}
 		}
 	}
@@ -527,7 +527,7 @@ void EasyMat::div(const EasyVec& vec, EM_DIMENSION dim)
 		{
 			for (unsigned long j = 0; j < mCols; j++)
 			{
-				operator()(i, j) /= vec[j];
+				mData[i * mCols + j] /= vec.mData[j];
 			}
 		}
 	}
@@ -542,7 +542,7 @@ void EasyMat::div(const EasyVec& vec, EM_DIMENSION dim)
 		{
 			for (unsigned long j = 0; j < mRows; j++)
 			{
-				operator()(j, i) /= vec[j];
+				mData[j * mCols + i] /= vec.mData[j];
 			}
 		}
 	}
@@ -565,9 +565,9 @@ void EasyMat::swap(unsigned long index1, unsigned long index2, EM_DIMENSION dim)
 		double tmp;
 		for (unsigned long i = 0; i < mRows; i++)
 		{
-			tmp = operator()(i, index1);
-			operator()(i, index1) = operator()(i, index2);
-			operator()(i, index2) = tmp;
+			tmp = mData[i * mCols + index1];
+			mData[i * mCols + index1] = mData[i * mCols + index2];
+			mData[i * mCols + index2] = tmp;
 		}
 	}
 }
@@ -581,7 +581,7 @@ void EasyMat::sortByRowAsc(unsigned long index)
 		unsigned long smallestIndex = i;
 		for (unsigned long j = i; j < mRows; j++)
 		{
-			if (operator()(smallestIndex,index) > operator()(j, index))
+			if (mData[smallestIndex * mCols + index] > mData[j * mCols + index])
 				smallestIndex = j;
 		}
 		if (i != smallestIndex)
@@ -599,7 +599,7 @@ void EasyMat::sortByRowDesc(unsigned long index)
 		unsigned long BiggestIndex = i;
 		for (unsigned long j = i; j < mRows; j++)
 		{
-			if (operator()(BiggestIndex, index) < operator()(j, index))
+			if (mData[BiggestIndex * mCols + index] < mData[j * mCols + index])
 				BiggestIndex = j;
 		}
 		if (i != BiggestIndex)
@@ -615,8 +615,8 @@ EasyMat EasyMat::col(const EasyVec & vec) const
 	for (unsigned long i = 0; i < mRows; i++)
 	{
 		for (unsigned long j = 0; j < vec.size(); j++)
-		{
-			result(i, j) = operator()(i, (unsigned long)vec[j]);
+		{		
+			result.mData[i * result.mCols + j] = mData[i * mCols + (unsigned long)vec.mData[j]];
 		}
 	}
 	return result;
@@ -628,7 +628,7 @@ EasyMat EasyMat::row(const EasyVec & vec) const
 	for (unsigned long i = 0; i < vec.size(); i++)
 	{
 		memcpy(result.mData + i * mCols, 
-			mData + (unsigned long)vec[i] * mCols, mCols * sizeof(double));
+			mData + (unsigned long)vec.mData[i] * mCols, mCols * sizeof(double));
 	}
 	return result;
 }
@@ -638,7 +638,7 @@ EasyVec EasyMat::col(unsigned long index) const
 	EasyVec result(mRows, EM_BY_COL);
 	for (unsigned long i = 0; i < mRows;i++)
 	{
-		result[i] = operator()(i, index);
+		result.mData[i] = mData[i * mCols + index];
 	}
 	return result;
 }
@@ -659,11 +659,11 @@ double EasyMat::max(unsigned long index, EM_DIMENSION dim) const
 			throw "index out of range";
 		if (mCols == 0 || mRows == 0)
 			throw "empty mat";
-		result = operator()(0, index);
+		result = mData[index];
 		for (unsigned long i = 1; i < mRows; i++)
 		{
-			if (result < operator()(i, index))
-				result = operator()(i, index);
+			if (result < mData[i * mCols + index])
+				result = mData[i * mCols + index];
 		}
 	}
 	else
@@ -672,11 +672,11 @@ double EasyMat::max(unsigned long index, EM_DIMENSION dim) const
 			throw "index out of index";
 		if (mCols == 0 || mRows == 0)
 			throw "empty mat";
-		result = operator()(index, 0);
+		result = mData[index * mCols];
 		for (unsigned long i = 1; i < mCols; i++)
 		{
-			if (result < operator()(index, i))
-				result = operator()(index, i);
+			if (result < mData[index * mCols + i])
+				result = mData[index * mCols + i];
 		}
 	}
 	return result;
@@ -691,11 +691,11 @@ double EasyMat::min(unsigned long index, EM_DIMENSION dim) const
 			throw "index out of range";
 		if (mCols == 0 || mRows == 0)
 			throw "empty mat";
-		result = operator()(0, index);
+		result = mData[index];
 		for (unsigned long i = 1; i < mRows; i++)
 		{
-			if (result > operator()(i, index))
-				result = operator()(i, index);
+			if (result > mData[i * mCols + index])
+				result = mData[i * mCols + index];
 		}
 	}
 	else
@@ -704,11 +704,11 @@ double EasyMat::min(unsigned long index, EM_DIMENSION dim) const
 			throw "index out of index";
 		if (mCols == 0 || mRows == 0)
 			throw "empty mat";
-		result = operator()(index, 0);
+		result = mData[index * mCols];
 		for (unsigned long i = 1; i < mCols; i++)
 		{
-			if (result > operator()(index, i))
-				result = operator()(index, i);
+			if (result > mData[index * mCols + i])
+				result = mData[index * mCols + i];
 		}
 	}
 	return result;
@@ -740,7 +740,7 @@ double EasyMat::sum(unsigned long index, EM_DIMENSION dim) const
 			throw "empty mat";
 		for (unsigned long i = 0; i < mRows; i++)
 		{
-			result += operator()(i, index);
+			result += mData[i * mCols + index];
 		}
 	}
 	else
@@ -751,7 +751,7 @@ double EasyMat::sum(unsigned long index, EM_DIMENSION dim) const
 			throw "empty mat";
 		for (unsigned long i = 0; i < mCols; i++)
 		{
-			result += operator()(index, i);
+			result += mData[index * mCols + i];
 		}
 	}
 	return result;
@@ -768,9 +768,9 @@ EasyVec EasyMat::max(EM_DIMENSION dim) const
 		{
 			for (unsigned long j = 0; j < mCols; j++)
 			{
-				if (result[j] < operator()(i, j))
+				if (result.mData[j] < mData[i * mCols + j])
 				{
-					result[j] = operator()(i, j);
+					result.mData[j] = mData[i * mCols + j];
 				}
 			}
 		}
@@ -785,9 +785,9 @@ EasyVec EasyMat::max(EM_DIMENSION dim) const
 		{
 			for (unsigned long j = 0; j < mRows; j++)
 			{
-				if (result[j] < operator()(j, i))
+				if (result.mData[j] < mData[j * mCols + i])
 				{
-					result[j] = operator()(j, i);
+					result.mData[j] = mData[j * mCols + i];
 				}
 			}
 		}
@@ -806,9 +806,9 @@ EasyVec EasyMat::min(EM_DIMENSION dim) const
 		{
 			for (unsigned long j = 0; j < mCols; j++)
 			{
-				if (result[j] > operator()(i, j))
+				if (result.mData[j] > mData[i * mCols + j])
 				{
-					result[j] = operator()(i, j);
+					result.mData[j] = mData[i * mCols + j];
 				}
 			}
 		}
@@ -823,9 +823,9 @@ EasyVec EasyMat::min(EM_DIMENSION dim) const
 		{
 			for (unsigned long j = 0; j < mRows; j++)
 			{
-				if (result[j] > operator()(j, i))
+				if (result.mData[j] > mData[j * mCols + i])
 				{
-					result[j] = operator()(j, i);
+					result.mData[j] = mData[j * mCols + i];
 				}
 			}
 		}
@@ -858,7 +858,7 @@ EasyVec EasyMat::sum(EM_DIMENSION dim) const
 		{
 			for (unsigned long j = 0; j < mCols; j++)
 			{
-				result[j] += operator()(i, j);
+				result.mData[j] += mData[i * mCols + j];
 			}
 		}
 		return result;
@@ -872,7 +872,7 @@ EasyVec EasyMat::sum(EM_DIMENSION dim) const
 		{
 			for (unsigned long j = 0; j < mRows; j++)
 			{
-				result[j] += operator()(j, i);
+				result.mData[j] += mData[j * mCols + i];
 			}
 		}
 		return result;
@@ -885,7 +885,7 @@ void EasyMat::abs()
 	{
 		for (unsigned long j = 0; j < mCols; j++)
 		{
-			operator()(i, j) = std::abs(operator()(i, j));
+			mData[i * mCols + j] = std::abs(mData[i * mCols + j]);
 		}
 	}
 }
@@ -896,7 +896,7 @@ void EasyMat::sqrt()
 	{
 		for (unsigned long j = 0; j < mCols; j++)
 		{
-			operator()(i, j) = std::sqrt(operator()(i, j));
+			mData[i * mCols + j] = std::sqrt(mData[i * mCols + j]);
 		}
 	}
 }
@@ -907,7 +907,7 @@ void EasyMat::pow(double p)
 	{
 		for (unsigned long j = 0; j < mCols; j++)
 		{
-			operator()(i, j) = std::pow(operator()(i, j), p);
+			mData[i * mCols + j] = std::pow(mData[i * mCols + j], p);
 		}
 	}
 }
