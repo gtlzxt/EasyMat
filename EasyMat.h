@@ -4,8 +4,13 @@
 *the raw data is of kind double,
 *
 */
+namespace std
+{
+	class thread;
+}
 namespace em
 {
+	constexpr auto THREAD_NUMBER = 4;
 	class EasyVec;
 	enum EM_DIMENSION
 	{
@@ -89,12 +94,47 @@ namespace em
 		EM_DIMENSION mDim;
 		static const double mPrecision;
 	private:
+		class Thread_Guard
+		{
+		public:
+			explicit Thread_Guard(std::thread& t);
+			~Thread_Guard();
+			Thread_Guard(const Thread_Guard&) = delete;
+			Thread_Guard& operator=(const Thread_Guard&) = delete;
+		private:
+			std::thread& mThread;
+		};
 		void initMem();
+		//process data with multi thread
+		template<typename fun>
+		void processData(fun f) const
+		{
+			if (mRows > NEED_MULTITHREAD && THREAD_NUMBER > 1)
+			{
+				std::thread t[THREAD_NUMBER];
+				unsigned long batch = mRows / THREAD_NUMBER;
+				for (int i = 0; i < THREAD_NUMBER - 1;i++)
+				{
+					t[i] = std::thread(f, i*batch, (i + 1)*batch);
+				}
+				t[THREAD_NUMBER - 1] = std::thread(f, (THREAD_NUMBER - 1) * batch, mRows);
+
+				for (int i = 0; i < THREAD_NUMBER;i++)
+				{
+					t[i].join();
+				}
+			}
+			else
+			{
+				f(0, mRows);
+			}
+		}
 		/*
 		move (index to mCols) cols data, used for add, insert or remove cols
 		*/
 		void moveCol(unsigned long index, long steps);
 		const static unsigned long INIT_CAPACITY = 64;
+		const static unsigned long NEED_MULTITHREAD = 64;
 	};
 }
 
